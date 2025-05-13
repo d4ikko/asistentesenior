@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Maqueta de Tótem de Voz</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #eef2f3;
+      text-align: center;
+      padding: 2em;
+    }
+    #personaje {
+      width: 200px;
+    }
+    #globo {
+      position: relative;
+      display: inline-block;
+      background: #fff;
+      padding: 1em;
+      border-radius: 1em;
+      margin-top: 1em;
+      max-width: 60%;
+      box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+    }
+    #globo::after {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: 30px;
+      border-width: 10px;
+      border-style: solid;
+      border-color: #fff transparent transparent transparent;
+    }
+    button {
+      margin-top: 2em;
+      padding: 1em 2em;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pregúntale al tótem</h1>
+  <p>Ejemplo: "¿Dónde pago la luz?"</p>
+  <button onclick="escuchar()">🎤 Hablar</button>
+  <div id="respuesta" style="margin-top: 2em;">
+    <img id="personaje" src="https://i.imgur.com/5MZocCz.png" alt="personaje">
+    <div id="globo"></div>
+  </div>
+
+  <script>
+    const respuestas = {
+      "qué medicamentos me recetó el doctor": {
+        texto: "Paciente: Kathalina Alveal\nFecha: 8 de mayo de 2025\nMedicamento 1: Paracetamol\nIndicación: Para mejorar el resfriado.",
+        imagen: "https://i.imgur.com/5MZocCz.png"
+      },
+      "dónde puedo pedir una hora para atenderme": {
+        texto: "Puedes pedir una hora a través de nuestra página web o en el módulo de atención.",
+        imagen: "https://i.imgur.com/5MZocCz.png"
+      },
+      "en qué parte queda el sector rojo": {
+        texto: "El sector rojo está ubicado en el primer piso, al lado del área de urgencias.",
+        imagen: "https://i.imgur.com/5MZocCz.png"
+      },
+      "a qué hora puedo venir los días sábados": {
+        texto: "Los sábados puedes venir de 9:00 AM a 2:00 PM.",
+        imagen: "https://i.imgur.com/5MZocCz.png"
+      },
+      "dónde están las urgencias": {
+        texto: "Las urgencias están en la entrada principal, a la derecha.",
+        imagen: "https://i.imgur.com/5MZocCz.png"
+      },
+      "qué especialidades hay en esta clínica": {
+        texto: "Contamos con medicina general, pediatría, ginecología y traumatología.",
+        imagen: "https://i.imgur.com/5MZocCz.png"
+      },
+      "cómo llego al laboratorio": {
+        texto: "Desde la entrada, sigue las líneas verdes hasta el final del pasillo.",
+        imagen: "https://i.imgur.com/5MZocCz.png"
+      },
+      "dónde se toman los exámenes de sangre": {
+        texto: "Los exámenes de sangre se realizan en el laboratorio, sector azul.",
+        imagen: "https://i.imgur.com/5MZocCz.png"
+      }
+    };
+
+    function escuchar() {
+      const reconocimiento = new webkitSpeechRecognition();
+      reconocimiento.lang = 'es-ES';
+      reconocimiento.onresult = function(event) {
+        const pregunta = event.results[0][0].transcript.toLowerCase();
+        responder(pregunta);
+      };
+      reconocimiento.onerror = function(e) {
+        alert('Error al reconocer la voz. Intente de nuevo.');
+      };
+      reconocimiento.start();
+    }
+
+    function responder(pregunta) {
+      const respuesta = respuestas[pregunta];
+      const globo = document.getElementById("globo");
+      const personaje = document.getElementById("personaje");
+      if (respuesta) {
+        globo.textContent = respuesta.texto;
+        personaje.src = respuesta.imagen;
+        const mensaje = new SpeechSynthesisUtterance(respuesta.texto);
+        mensaje.lang = 'es-ES';
+        speechSynthesis.speak(mensaje);
+      } else {
+        globo.textContent = "Lo siento, no entendí la pregunta.";
+        personaje.src = "https://i.imgur.com/5MZocCz.png";
+        const mensaje = new SpeechSynthesisUtterance("Lo siento, no entendí la pregunta.");
+        mensaje.lang = 'es-ES';
+        speechSynthesis.speak(mensaje);
+      }
+    }
+  </script>
+</body>
+</html>
